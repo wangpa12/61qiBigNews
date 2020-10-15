@@ -68,6 +68,58 @@
             </form>
         </div>
     </div>
+    <script src="./libs/http.js"></script>
+    <script>
+        // 入口函数
+        $(function () {
+            // 页面加载时,ajax请求详细信息
+            $.ajax({
+                url:BigNew.user_detail,
+                type:'get',
+                dataType:'json',
+                success: function(backData){
+                    console.log(backData);
+                    $('.user_pic').attr('src',backData.data.userPic);
+                    for(let key in backData.data){
+                        $('.' + key).val(backData.data[key]);
+                    };
+                }
+            });
+            // 文件预览
+            // 1.给file表单元素注册onchange事件
+            $('#exampleInputFile').change(function () {
+                // 1.2获得用户选择的图片
+                let file = this.files[0];
+                let url = URL.createObjectURL(file);
+                $('.user_pic').attr('src',url);
+            });
+
+            // 文件上传
+            $('.btn-edit').click(function (e) {
+                // 1.阻止表单默认跳转
+                e.preventDefault();
+                // 2.创建formdata 处理文件参数
+                let fd = new FormData($('form')[0]);
+                // 3.发送ajax请求
+                $.ajax({
+                    url:BigNew.user_edit,
+                    type: 'post',
+                    dataType:'json',
+                    data:fd,
+                    processData:false,
+                    contentType:false,
+                    success:function(backData){
+                        console.log(backData);
+                        if(backData.code == 200){
+                            alert('修改成功');
+                            // 刷新首页
+                            window.parent.location.reload();
+                        }
+                    }
+                })
+            })
+        })
+    </script>
 </body>
 
 </html>
