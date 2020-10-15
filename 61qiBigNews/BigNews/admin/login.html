@@ -57,7 +57,7 @@
   </div><!-- /.modal -->
 
   <script>
-    
+
 
     // 入口函数
     $(function () {
@@ -90,16 +90,19 @@
             // 处理接口返回来得数据
             if (backData.code == 400) {
               $('#myModal').modal(
-            $('.modal-body>p').text(backData.msg)
-          );
+                $('.modal-body>p').text(backData.msg)
+              );
               return
             } else if (backData.code == 200) {
               $('#myModal').modal(
-            $('.modal-body>p').text(backData.msg)
-          );
-              // 将返回的token值保存到location中,方便主页验证登录信息时使用
-              localStorage.setItem('token',backData.token);
+                $('.modal-body>p').text(backData.msg)
+              );
+              $('#myModal').on('hidden.bs.modal', function (e) {
+                // 将返回的token值保存到location中,方便主页验证登录信息时使用
+              localStorage.setItem('token', backData.token);
               window.location.href = "./index.html";
+              })
+              
             }
           }
         });
