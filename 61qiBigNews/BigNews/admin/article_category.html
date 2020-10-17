@@ -53,6 +53,35 @@
         </div>
     </div>
 
+    <!-- 模态框的引用 -->
+
+    <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                            aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="exampleModalLabel">文章分类</h4>
+                </div>
+                <div class="modal-body">
+                    <form>
+                        <div class="form-group">
+                            <label for="recipient-name" class="control-label">文章类别</label>
+                            <input type="text" class="form-control" id="recipient-name">
+                        </div>
+                        <div class="form-group">
+                            <label for="message-text" class="control-label">类别详情</label>
+                            <textarea class="form-control" id="message-text"></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default btn-cancel" data-dismiss="modal">取消</button>
+                    <button type="button" class="btn btn-primary btn-confirm">确定</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <script id="cat_list" type="text/html">
         {{each data v}}
@@ -60,8 +89,8 @@
             <td>{{v.name}}</td>
             <td>{{v.slug}}</td>
             <td class="text-center">
-                <a href="javascript:void(0);" data-toggle="modal" class=" btn btn-info btn-xs" data-id="{{v.id}}">编辑</a>
-                <a href="javascript:void(0);" class="btn btn-danger btn-xs" data-id="{{v.id}}">删除</a>
+                <a href="javascript:void(0);" data-toggle="modal" class=" btn btn-info btn-xs" data-id="{{v.id}}" data-target="#myModal">编辑</a>
+                <a href="javascript:void(0);" class="btn btn-danger btn-xs btn-delete" data-id="{{v.id}}">删除</a>
             </td>
         </tr>
         {{/each}}
@@ -78,39 +107,100 @@
                 dataType: 'json',
                 success: function (backData) {
                     console.log(backData);
-                    let tem = template('cat_list',backData);
+                    let tem = template('cat_list', backData);
                     $('.category_table tbody').html(tem);
                 }
             });
             // 新增和编辑分类的模态框的复用
             // (1)模态框的复用
-
             // (2)新增和编辑的业务逻辑不同
-
             // 新增
             // a.模态框文本清空
             // b.模态框右下角显示新增
-
             // 编辑
             // a.模态框文本显示当前点击的分类数据(页面内传值)
             // b.模态框右下角显示编辑
-
             // (3)模态框本身的按钮
             // (1)取消按钮  清空表单
-
             // (2)确定按钮  
             // 新增按钮   发送新增ajax
-
             // 编辑按钮   发送编辑ajax  
 
-            // 2.新增分类
 
+            // 模态框弹出事件
+            $('#myModal').on('show.bs.modal', function (e) {
 
-            // 3,编辑分类
-
-
+                if ($(e.relatedTarget).text() == '新增分类') {
+                    // 将模态框的文本重置
+                    $('.modal-body>form')[0].reset();
+                    $('.btn-confirm').text('新增');
+                } else {
+                    $('.btn-confirm').text('编辑');
+                    $('#recipient-name').val($(e.relatedTarget).parent().prev().prev().text());
+                    $('#message-text').val($(e.relatedTarget).parent().prev().text());
+                    $('.btn-confirm').attr('data-id', $(e.relatedTarget).attr('data-id'))
+                }
+            })
+            // 模态框取消按钮
+            $('.btn-cancel').click(function () {
+                $('.modal-body>form')[0].reset();
+            })
+            // 模态框的确定按钮
+            $('.btn-confirm').click(function () {
+                if ($(this).text() == '新增') {
+                    // 2.新增分类
+                    $.ajax({
+                        url: BigNew.category_add,
+                        type: 'post',
+                        dataType: 'json',
+                        data: {
+                            name: $('#recipient-name').val(),
+                            slug: $('#message-text').val(),
+                        },
+                        success: function (backData) {
+                            if (backData.code == 201) {
+                                alert('增加成功');
+                                window.location.reload();
+                            }
+                        }
+                    });
+                } else {
+                    // 3,编辑分类
+                    $.ajax({
+                        url: BigNew.category_edit,
+                        type: 'post',
+                        dataType: 'json',
+                        data: {
+                            id: $(this).attr('data-id'),
+                            name: $('#recipient-name').val(),
+                            slug: $('#message-text').val(),
+                        },
+                        success: function (backData) {
+                            console.log(backData);
+                            if (backData.code == 200) {
+                                alert('修改成功');
+                                window.location.reload();
+                            }
+                        }
+                    });
+                }
+            });
             // 4.删除分类
-
+            $('table>tbody').on('click', '.btn-delete', function () {
+                $.ajax({
+                    url: BigNew.category_delete,
+                    type: 'post',
+                    dataType: 'json',
+                    data: { id: $(this).attr('data-id') },
+                    success: function (backData) {
+                        console.log(backData);
+                        if (backData.code == 204) {
+                            alert('删除成功');
+                            window.location.reload();
+                        }
+                    }
+                });
+            });
         })
     </script>
 
