@@ -98,6 +98,7 @@
             $('.btn-edit').click(function (e) {
                 // 1.阻止表单默认跳转
                 e.preventDefault();
+                console.log(1);
                 // 2.创建formdata 处理文件参数
                 let fd = new FormData($('form')[0]);
                 // 3.发送ajax请求

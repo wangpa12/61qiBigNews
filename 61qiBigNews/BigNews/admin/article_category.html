@@ -14,6 +14,7 @@
     <script src="./libs/bootstrap/js/bootstrap.min.js"></script>
     <!-- 引入模板引擎js文件 -->
     <script src="./libs/template-web.js"></script>
+    <script src="./libs/http.js"></script>
 </head>
 
 <body>
@@ -51,5 +52,66 @@
             </table>
         </div>
     </div>
+
+
+    <script id="cat_list" type="text/html">
+        {{each data v}}
+        <tr>
+            <td>{{v.name}}</td>
+            <td>{{v.slug}}</td>
+            <td class="text-center">
+                <a href="javascript:void(0);" data-toggle="modal" class=" btn btn-info btn-xs" data-id="{{v.id}}">编辑</a>
+                <a href="javascript:void(0);" class="btn btn-danger btn-xs" data-id="{{v.id}}">删除</a>
+            </td>
+        </tr>
+        {{/each}}
+    </script>
+
+
+    <script>
+        // 入口函数
+        $(function () {
+            // 1.页面一加载:ajax请求所有分类
+            $.ajax({
+                url: BigNew.category_list,
+                type: 'get',
+                dataType: 'json',
+                success: function (backData) {
+                    console.log(backData);
+                    let tem = template('cat_list',backData);
+                    $('.category_table tbody').html(tem);
+                }
+            });
+            // 新增和编辑分类的模态框的复用
+            // (1)模态框的复用
+
+            // (2)新增和编辑的业务逻辑不同
+
+            // 新增
+            // a.模态框文本清空
+            // b.模态框右下角显示新增
+
+            // 编辑
+            // a.模态框文本显示当前点击的分类数据(页面内传值)
+            // b.模态框右下角显示编辑
+
+            // (3)模态框本身的按钮
+            // (1)取消按钮  清空表单
+
+            // (2)确定按钮  
+            // 新增按钮   发送新增ajax
+
+            // 编辑按钮   发送编辑ajax  
+
+            // 2.新增分类
+
+
+            // 3,编辑分类
+
+
+            // 4.删除分类
+
+        })
+    </script>
 
 </html>
