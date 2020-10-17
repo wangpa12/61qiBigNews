@@ -39,12 +39,25 @@
 </div>
 <script>
     $('#myModal').on('show.bs.modal', function (e) {
+      console.log(e.relatedTarget);
     if ($(e.relatedTarget).text() == '新增') {
         $('.modal-body>form')[0].reset();
         $('.btn-confirm').text('新增').addClass('btn-info').removeClass('btn-success');
     } else {
         $('.btn-confirm').text('编辑').addClass('btn-success').removeClass('btn-info');
     }
+});
+$('.btn-cancel').click(function () {
+  $('.modal-body>form')[0].reset();
+});
+
+$('.btn-confirm').click(function (e) {
+  console.log(e.relatedTarget);
+  if ($(this).text() == '新增') {
+    console.log('新增ajax');
+  } else {
+    console.log('编辑ajax');
+  }
 })
 </script>
 </body>
