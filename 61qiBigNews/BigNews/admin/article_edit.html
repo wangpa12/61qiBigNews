@@ -14,6 +14,14 @@
     <script src="./libs/jquery-1.12.4.min.js"></script>
     <!-- 模板引擎 -->
     <script src="./libs/template-web.js"></script>
+    <script src="./libs/http.js"></script>
+
+    <!-- 导包  jedate +  wangEditor -->
+    <link rel="stylesheet" href="./libs/jedate/css/jeDate-test.css">
+    <link rel="stylesheet" href="./libs/jedate/css/jedate.css">
+    <script src="./libs/jedate/js/jedate.js"></script>
+    <script src="./libs/wangEditor.min.js"></script>
+
 </head>
 
 <body>
@@ -51,11 +59,20 @@
                 <div class="form-group">
                     <label class="col-sm-2 control-label">发布时间：</label>
                     <div class="col-sm-4">
+                        <!-- jedate日期插件html -->
+                        <div class="jeinpbox">
+                            <input type="text" class="jeinput" id="testico" placeholder="YYYY-MM-DD">
+                            <div class="icons jebtns"
+                                onclick="jeDate('#testico',{trigger:false,format: 'YYYY-MM-DD',zIndex:200001,})"></div>
+                        </div>
                     </div>
                 </div>
                 <div class="form-group">
                     <label for="inputEmail3" class="col-sm-2 control-label">文章内容：</label>
                     <div class="col-sm-10">
+                        <!-- 编辑器html -->
+                        <div id="div1">
+                        </div>
                     </div>
                 </div>
                 <div class="form-group">
@@ -67,6 +84,67 @@
             </form>
         </div>
     </div>
+
+    <!-- 文章分类模板 -->
+    <script id="cat_list" type="text/html">
+        {{each data v}}
+        <option value="{{v.id}}">{{v.name}}</option>
+        {{/each}}
+    </script>
+    <script>
+        $(function () {
+            const E = window.wangEditor
+            const editor = new E('#div1')
+            // 或者 const editor = new E( document.getElementById('div1') )
+            editor.create();
+            // 获得从article_list传递过来的文章id
+            let id = window.location.href.split('=')[1];
+            // ajax加载所有分类列表
+            $.ajax({
+                url:BigNew.category_list,
+                type:'get',
+                dataType:'json',
+                success: function(backData){
+                    // 模板引擎渲染
+                    $('.category').html(template('cat_list',backData));
+                }
+            });
+
+            // ajax发送请求加载文章详细信息
+            $.ajax({
+                url:BigNew.article_search,
+                type:'get',
+                dataType:'json',
+                data:{id:id},
+                success: function(backData){
+                    console.log(backData);
+                    $('.title').val(backData.data.title);
+                    $('.category').val(backData.data.categoryId);
+                    $('#testico').val(backData.data.date);//日期  
+                    editor.txt.html(backData.data.content);//编辑器需要使用自己的语法
+                    $('.article_cover').attr('src', backData.data.cover);
+                }
+            });
+            jeDate("#testico", {
+                format: "YYYY-MM-DD",
+                isTime: false,
+                minDate: "2014-09-19 00:00:00",
+                isinitVal: true,
+                multiPane: true,  //双面板 true：不显示  false:显示
+                festival: true,//是否显示农历节日
+                theme: { bgcolor: "#00A1CB", color: "#0f0", pnColor: "#f00" },
+                zIndex: 10001
+            });
+
+            // 文章预览
+            // 给file表单元素注册onchange事件
+            $('#inputCover').change(function () {
+                let file = this.files[0];
+                let url = URL.createObjectURL(file);
+                $('.article_cover').attr('src',url);
+            });
+        })
+    </script>
 </body>
 
 </html>
