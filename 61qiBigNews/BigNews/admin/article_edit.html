@@ -101,22 +101,22 @@
             let id = window.location.href.split('=')[1];
             // ajax加载所有分类列表
             $.ajax({
-                url:BigNew.category_list,
-                type:'get',
-                dataType:'json',
-                success: function(backData){
+                url: BigNew.category_list,
+                type: 'get',
+                dataType: 'json',
+                success: function (backData) {
                     // 模板引擎渲染
-                    $('.category').html(template('cat_list',backData));
+                    $('.category').html(template('cat_list', backData));
                 }
             });
 
             // ajax发送请求加载文章详细信息
             $.ajax({
-                url:BigNew.article_search,
-                type:'get',
-                dataType:'json',
-                data:{id:id},
-                success: function(backData){
+                url: BigNew.article_search,
+                type: 'get',
+                dataType: 'json',
+                data: { id: id },
+                success: function (backData) {
                     console.log(backData);
                     $('.title').val(backData.data.title);
                     $('.category').val(backData.data.categoryId);
@@ -141,9 +141,42 @@
             $('#inputCover').change(function () {
                 let file = this.files[0];
                 let url = URL.createObjectURL(file);
-                $('.article_cover').attr('src',url);
+                $('.article_cover').attr('src', url);
             });
-        })
+        });
+        $('.btn-edit, .btn-draft ').click(function (e) {
+            // 阻止表单默认跳转
+            e.preventDefault();
+            // 获得当前按钮的状态
+            let state = $(this).hasClass('.btn-edit') ? '已发布' : '草稿';
+            // formdata获取参数
+
+            let fd = new FormData($('form')[0]);
+
+            fd.append('id', id);
+            fd.append('date', $('#testico').val());//日期
+            fd.append('content', editor.txt.html());//编辑器
+            fd.append('state', state);
+
+            //(4)ajax发送请求
+            $.ajax({
+                url: BigNew.article_edit,
+                type: 'post',
+                dataType: 'json',
+                data: fd,
+                processData: false,
+                contentType: false,
+                success: function (backData) {
+                    console.log(backData);
+                    if (backData.code == 200) {
+                        alert('修改成功');
+                        //跳转回到文章列表页
+                        window.location.href = './article_list.html';
+                        // window.history.back();
+                    }
+
+                }
+            })
     </script>
 </body>
 
