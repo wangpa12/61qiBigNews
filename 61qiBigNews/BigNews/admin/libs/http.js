@@ -21,8 +21,10 @@
             comment_list: baseURL + '/admin/comment/search',//文章评论列表
             comment_pass: baseURL + '/admin/comment/pass',//文章评论通过
             comment_reject: baseURL + '/admin/comment/reject',//文章评论不通过
+            comment_search: baseURL + '/admin/comment/search',//文章评论搜索
             comment_delete: baseURL + '/admin/comment/delete',//文章评论删除
-
+            count_article: baseURL + '/admin/data/article',//统计文章数据
+            article_info: baseURL + '/admin/data/info',//文章删除
         };
         // 暴露接口
         w.BigNew = BigNew;
